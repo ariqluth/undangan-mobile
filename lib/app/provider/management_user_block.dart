@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:myapp/app/service/auth.dart';
 import '../models/managementuser.dart';
 import '../service/api_service.dart';
-
 // Events
 abstract class UserEvent extends Equatable {
   const UserEvent();
@@ -59,27 +59,31 @@ class UserError extends UserState {
 // Bloc
 class ManagementUserBlock extends Bloc<UserEvent, UserState> {
   final ApiService userRepository;
+  final AuthProvider authProvider;
 
-  ManagementUserBlock(this.userRepository) : super(UserInitial());
+  ManagementUserBlock(this.userRepository, this.authProvider) : super(UserInitial()) {
+    on<GetUsers>(_onGetUsers);
+    on<UpdateUserVerifiedAt>(_onUpdateUserVerifiedAt);
+  }
 
-  Stream<UserState> mapEventToState(UserEvent event) async* {
-    if (event is GetUsers) {
-      yield UserLoading();
-      try {
-        final users = await userRepository.getUsers();
-        yield UserLoaded(users);
-      } catch (e) {
-        yield UserError(e.toString());
-      }
-    } else if (event is UpdateUserVerifiedAt) {
-      yield UserLoading();
-      try {
-        await userRepository.updateUserVerifiedAt(event.id, event.emailVerifiedAt);
-        final users = await userRepository.getUsers();
-        yield UserLoaded(users);
-      } catch (e) {
-        yield UserError(e.toString());
-      }
+  void _onGetUsers(GetUsers event, Emitter<UserState> emit) async {
+    emit(UserLoading());
+    try {
+      final users = await userRepository.getUsers(authProvider.token!);
+      emit(UserLoaded(users));
+    } catch (e) {
+      emit(UserError(e.toString()));
+    }
+  }
+
+  void _onUpdateUserVerifiedAt(UpdateUserVerifiedAt event, Emitter<UserState> emit) async {
+    emit(UserLoading());
+    try {
+      await userRepository.updateUserVerifiedAt(event.id, event.emailVerifiedAt, authProvider.token!);
+      final users = await userRepository.getUsers(authProvider.token!);
+      emit(UserLoaded(users));
+    } catch (e) {
+      emit(UserError(e.toString()));
     }
   }
 }

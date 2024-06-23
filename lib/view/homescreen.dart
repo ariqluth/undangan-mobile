@@ -1,7 +1,7 @@
-// screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../app/provider/auth_bloc.dart';
+import '../view/management/managementuser_screen.dart';
 import '../app/provider/bottom_nav_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -50,21 +50,50 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: BlocBuilder<BottomNavBloc, BottomNavState>(
+      body: BlocConsumer<BottomNavBloc, BottomNavState>(
+        listener: (context, state) {
+          if (state is BottomNavItemSelectedState && state.index == 1) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Navigated to Management User')),
+            );
+          }
+        },
         builder: (context, state) {
           if (state is BottomNavItemSelectedState) {
             switch (state.index) {
               case 0:
                 return Center(child: Text('Home Screen'));
               case 1:
-                return Center(child: Text('Search Screen'));
+                try {
+                  return ManagementUserScreen();
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error loading Management User Screen: $e')),
+                  );
+                  return Center(child: Text('Error loading Management User Screen'));
+                }
               case 2:
                 return Center(child: Text('Profile Screen'));
               default:
                 return Center(child: Text('Home Screen'));
             }
           }
-          return Center(child: Text('Home Screen'));
+          return Center( child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Home Screen'),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ManagementUserScreen()),
+                          );
+                        },
+                        child: Text('Go to Management User'),
+                      ),
+                    ],
+                  ),);
         },
       ),
       bottomNavigationBar: BlocBuilder<BottomNavBloc, BottomNavState>(

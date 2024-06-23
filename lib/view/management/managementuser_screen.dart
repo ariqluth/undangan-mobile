@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myapp/app/provider/management_user_block.dart';
 import 'package:myapp/app/models/managementuser.dart';
-
-class UserScreen extends StatelessWidget {
+import 'package:myapp/app/service/api_service.dart';
+class ManagementUserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final apiService = context.read<ApiService>();
+    print('ApiService: $apiService'); // Debug print to verify ApiService
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Users'),
+        title: Text('Management User'),
       ),
       body: BlocBuilder<ManagementUserBlock, UserState>(
         builder: (context, state) {
@@ -20,14 +23,14 @@ class UserScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final user = state.users[index];
                 return ListTile(
-                  title: Text(user.name),
+                  title: Text('Nama: ${user.name}'),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Email: ${user.email}'),
-                      Text('Email Verified At: ${user.emailVerifiedAt}'),
-                      Text('Created At: ${user.createdAt}'),
-                      Text('Updated At: ${user.updatedAt}'),
+                      Text('Verify: ${user.emailVerifiedAt}'),
+                      Text('Dibuat: ${user.createdAt}'),
+                      Text('Diupdate: ${user.updatedAt}'),
                     ],
                   ),
                   trailing: IconButton(
@@ -56,10 +59,30 @@ class UserScreen extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Edit Email Verified At'),
-          content: TextField(
-            controller: _emailVerifiedAtController,
-            decoration: InputDecoration(labelText: 'Email Verified At'),
+          title: Text('Edit Verify'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _emailVerifiedAtController,
+                decoration: InputDecoration(labelText: 'Verify'),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  // Set the verification date to the current date
+                  _emailVerifiedAtController.text = DateTime.now().toIso8601String();
+                },
+                child: Text('Verify Now'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Clear the verification date
+                  _emailVerifiedAtController.clear();
+                },
+                child: Text('Clear Verification'),
+              ),
+            ],
           ),
           actions: [
             TextButton(

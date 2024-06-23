@@ -61,6 +61,8 @@ part 'auth_state.dart';
           emit(AuthAuthenticatedSuperAdmin(authProvider.user!));
         } else if (authProvider.user!.roles.contains('employee')) {
           emit(AuthAuthenticatedEmployee(authProvider.user!));
+          } else if (authProvider.user!.roles.contains('customer')) {
+          emit(AuthAuthenticatedCustomer(authProvider.user!));
         } else {
           emit(AuthError('Unknown role'));
         }

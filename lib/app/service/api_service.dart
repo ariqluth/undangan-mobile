@@ -6,12 +6,17 @@ import '../models/tamu.dart';
 import '../models/order.dart';
 
 class ApiService {
-  // ngrok
-  final String baseUrl = " https://53e7-36-85-69-134.ngrok-free.app/api";
+  final String baseUrl = "https://weddingcheck.polinema.web.id/api";
 
 // management-user
- Future<List<Managementuser>> getUsers() async {
-    final response = await http.get(Uri.parse('$baseUrl/management-user'));
+  Future<List<Managementuser>> getUsers(String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/management-user'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
     if (response.statusCode == 200) {
       List<dynamic> body = json.decode(response.body);
       return body.map((dynamic item) => Managementuser.fromJson(item)).toList();
@@ -20,11 +25,13 @@ class ApiService {
     }
   }
 
-  Future<void> updateUserVerifiedAt(int id, String emailVerifiedAt) async {
+
+  Future<void> updateUserVerifiedAt(int id, String emailVerifiedAt, String token) async {
     final response = await http.put(
       Uri.parse('$baseUrl/management-user/$id'),
-      headers: <String, String>{
+      headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode(<String, String>{
         'email_verified_at': emailVerifiedAt,

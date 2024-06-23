@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:myapp/app/service/api_service.dart';
-import 'package:myapp/view/registerscreen.dart';
 import 'package:provider/provider.dart';
+import 'app/service/api_service.dart';
 import 'app/service/auth.dart';
 import 'app/provider/auth_bloc.dart';
 import 'app/provider/bottom_nav_bloc.dart';
@@ -11,6 +10,9 @@ import 'view/loginscreen.dart';
 import 'view/homescreen.dart';
 import 'view/dashboardscreen.dart';
 import 'view/dashboardcustomerscreen.dart';
+import 'view/registerscreen.dart';
+import 'view/management/managementuser_screen.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -23,33 +25,38 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<AuthProvider>(
           create: (context) => AuthProvider(),
         ),
-         BlocProvider<AuthBloc>(
+        Provider<ApiService>(
+          create: (context) => ApiService(),
+        ),
+        BlocProvider<AuthBloc>(
           create: (context) => AuthBloc(context.read<AuthProvider>())..add(AutoLoginEvent()),
         ),
         BlocProvider<BottomNavBloc>(
           create: (context) => BottomNavBloc(),
         ),
         BlocProvider<ManagementUserBlock>(
-          create: (context) => ManagementUserBlock(context.read<ApiService>()),
+          create: (context) => ManagementUserBlock(
+            context.read<ApiService>(),
+            context.read<AuthProvider>(),
+          )..add(GetUsers()),
         ),
       ],
-      child: BlocProvider(
-        create: (context) => AuthBloc(context.read<AuthProvider>())..add(AutoLoginEvent()),
-        child: MaterialApp(
-          title: 'Wedding Check',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          initialRoute: '/',
-          routes: {
-            '/': (context) => AuthWrapper(),
-            '/homescreen': (context) => HomeScreen(),
-            '/dashboardscreen': (context) => DashboardScreen(),
-            '/dashboardcustomerscreen': (context) => DashboardCustomerScreen(),
-            '/loginscreen': (context) => LoginScreen(),
-            '/registerscreen': (context) => RegisterScreen(),
-          },
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Wedding Check',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
         ),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => AuthWrapper(),
+          '/homescreen': (context) => HomeScreen(),
+          '/dashboardscreen': (context) => DashboardScreen(),
+          '/dashboardcustomerscreen': (context) => DashboardCustomerScreen(),
+          '/loginscreen': (context) => LoginScreen(),
+          '/registerscreen': (context) => RegisterScreen(),
+          '/managementuserscreen': (context) => ManagementUserScreen(),
+        },
       ),
     );
   }

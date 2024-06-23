@@ -33,4 +33,5 @@ class RegisterEvent extends AuthEvent {
 
 class LogoutEvent extends AuthEvent {}
 
-class AutoLoginEvent extends AuthEvent {}
+class AutoLoginEvent extends AuthEvent { 
+}
