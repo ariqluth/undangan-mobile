@@ -6,18 +6,22 @@ import 'app/service/auth.dart';
 import 'app/provider/auth_bloc.dart';
 import 'app/provider/bottom_nav_bloc.dart';
 import 'app/provider/management_user_block.dart';
+import 'app/provider/item/item_bloc.dart';
+import 'app/provider/item/item_event.dart';
 import 'view/loginscreen.dart';
 import 'view/homescreen.dart';
 import 'view/dashboardscreen.dart';
 import 'view/dashboardcustomerscreen.dart';
 import 'view/registerscreen.dart';
 import 'view/management/managementuser_screen.dart';
-
+import 'view/masterdata/item_screen.dart';
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -40,6 +44,11 @@ class MyApp extends StatelessWidget {
             context.read<AuthProvider>(),
           )..add(GetUsers()),
         ),
+       BlocProvider<ItemBloc>(
+          create: (context) =>
+            ItemBloc(context.read<ApiService>(),
+            context.read<AuthProvider>(),)..add(GetItems()),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -56,6 +65,7 @@ class MyApp extends StatelessWidget {
           '/loginscreen': (context) => LoginScreen(),
           '/registerscreen': (context) => RegisterScreen(),
           '/managementuserscreen': (context) => ManagementUserScreen(),
+          '/itemscreen': (context) => ItemScreen(),
         },
       ),
     );

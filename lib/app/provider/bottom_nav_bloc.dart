@@ -36,11 +36,9 @@ class BottomNavItemSelectedState extends BottomNavState {
 
 // Bloc
 class BottomNavBloc extends Bloc<BottomNavEvent, BottomNavState> {
-  BottomNavBloc() : super(BottomNavInitial());
-
-  Stream<BottomNavState> mapEventToState(BottomNavEvent event) async* {
-    if (event is BottomNavItemSelected) {
-      yield BottomNavItemSelectedState(event.index);
-    }
+  BottomNavBloc() : super(BottomNavInitial()) {
+    on<BottomNavItemSelected>((event, emit) {
+      emit(BottomNavItemSelectedState(event.index));
+    });
   }
 }

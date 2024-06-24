@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myapp/view/masterdata/item_screen.dart';
 import '../app/provider/auth_bloc.dart';
 import '../view/management/managementuser_screen.dart';
 import '../app/provider/bottom_nav_bloc.dart';
-
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -57,6 +57,11 @@ class _HomeScreenState extends State<HomeScreen> {
               SnackBar(content: Text('Navigated to Management User')),
             );
           }
+          if (state is BottomNavItemSelectedState && state.index == 2) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Navigated to Management Undangan Item List')),
+            );
+          }
         },
         builder: (context, state) {
           if (state is BottomNavItemSelectedState) {
@@ -64,36 +69,43 @@ class _HomeScreenState extends State<HomeScreen> {
               case 0:
                 return Center(child: Text('Home Screen'));
               case 1:
-                try {
-                  return ManagementUserScreen();
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error loading Management User Screen: $e')),
-                  );
-                  return Center(child: Text('Error loading Management User Screen'));
-                }
+                return ManagementUserScreen();
               case 2:
+                return ItemScreen();
+              case 3:
                 return Center(child: Text('Profile Screen'));
               default:
                 return Center(child: Text('Home Screen'));
             }
           }
-          return Center( child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Home Screen'),
-                      SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => ManagementUserScreen()),
-                          );
-                        },
-                        child: Text('Go to Management User'),
-                      ),
-                    ],
-                  ),);
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Home Screen'),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ManagementUserScreen()),
+                    );
+                  },
+                  child: Text('Go to Management User'),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ItemScreen()),
+                    );
+                  },
+                  child: Text('Go to Management Undangan item'),
+                ),
+              ],
+            ),
+          );
         },
       ),
       bottomNavigationBar: BlocBuilder<BottomNavBloc, BottomNavState>(
@@ -103,6 +115,9 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: (index) {
               context.read<BottomNavBloc>().add(BottomNavItemSelected(index));
             },
+            selectedItemColor: Colors.blue, // Color for selected item
+            unselectedItemColor: Colors.black, // Color for unselected items
+            showUnselectedLabels: true, // Show labels for unselected items
             items: [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home),
@@ -111,6 +126,10 @@ class _HomeScreenState extends State<HomeScreen> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.person),
                 label: 'Management User',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.list),
+                label: 'Undangan Item',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.settings),

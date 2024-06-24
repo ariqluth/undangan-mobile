@@ -1,12 +1,18 @@
+// rest_api.dart
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
+import 'package:async/async.dart';
+
 import 'package:myapp/app/models/managementuser.dart';
 import '../models/item.dart';
 import '../models/tamu.dart';
 import '../models/order.dart';
 
 class ApiService {
-  final String baseUrl = "https://weddingcheck.polinema.web.id/api";
+  // final String baseUrl = "https://weddingcheck.polinema.web.id/api";
+  final String baseUrl = "https://5ca6-36-85-69-134.ngrok-free.app/api";
 
 // management-user
   Future<List<Managementuser>> getUsers(String token) async {
@@ -44,7 +50,7 @@ class ApiService {
   }
 
 // order
- Future<List<Order>> getOrders() async {
+ Future<List<Order>> getOrders(String token) async {
     final response = await http.get(Uri.parse('$baseUrl/orders'));
 
     if (response.statusCode == 200) {
@@ -55,7 +61,7 @@ class ApiService {
     }
   }
 
-  Future<Order> createOrder(Order order) async {
+  Future<Order> createOrder(Order order, String token) async {
     final response = await http.post(
       Uri.parse('$baseUrl/orders'),
       headers: <String, String>{
@@ -71,7 +77,7 @@ class ApiService {
     }
   }
 
-  Future<Order> updateOrder(int id, Order order) async {
+  Future<Order> updateOrder(int id, Order order, String token) async {
     final response = await http.put(
       Uri.parse('$baseUrl/orders/$id'),
       headers: <String, String>{
@@ -87,65 +93,108 @@ class ApiService {
     }
   }
 
-  Future<void> deleteOrder(int id) async {
+  Future<void> deleteOrder(int id, String token) async {
     final response = await http.delete(Uri.parse('$baseUrl/orders/$id'));
 
     if (response.statusCode != 204) {
       throw Exception('Failed to delete order');
     }
   }
-// items
-  Future<List<Item>> getItems() async {
-    final response = await http.get(Uri.parse('$baseUrl/items'));
+ Future<List<Item>> getItems(String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/item'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
       return jsonResponse.map((item) => Item.fromJson(item)).toList();
     } else {
+      print('Failed to load items: ${response.statusCode} ${response.body}');
       throw Exception('Failed to load items');
     }
   }
 
-  Future<Item> createItem(Item item) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/items'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(item.toJson()),
-    );
+ Future<Item> createItem(Item item, String token, File imageFile) async {
+    var uri = Uri.parse('$baseUrl/item');
+    var request = http.MultipartRequest('POST', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..headers['Content-Type'] = 'multipart/form-data';
+
+    // Attach the image file
+    var stream = http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+    var length = await imageFile.length();
+    var multipartFile = http.MultipartFile('gambar', stream, length,
+        filename: basename(imageFile.path));
+
+    request.files.add(multipartFile);
+    // Add other fields
+    request.fields['user_id'] = item.userId.toString();
+    request.fields['nama_item'] = item.namaItem;
+
+    var response = await request.send();
 
     if (response.statusCode == 201) {
-      return Item.fromJson(json.decode(response.body));
+      var responseData = await response.stream.bytesToString();
+      return Item.fromJson(json.decode(responseData));
     } else {
+      var responseData = await response.stream.bytesToString();
+      print('Failed to create item: ${response.statusCode} $responseData');
       throw Exception('Failed to create item');
     }
   }
 
-  Future<Item> updateItem(int id, Item item) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/items/$id'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(item.toJson()),
-    );
+   Future<Item> updateItem(int id, Item item, String token, File? imageFile) async {
+    var uri = Uri.parse('$baseUrl/item/$id');
+    var request = http.MultipartRequest('POST', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..headers['Content-Type'] = 'multipart/form-data';
+
+    // Add the _method field to override the HTTP method
+    request.fields['_method'] = 'PUT';
+
+    if (imageFile != null) {
+      // Attach the image file
+      var stream = http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
+      var length = await imageFile.length();
+      var multipartFile = http.MultipartFile('gambar', stream, length,
+          filename: basename(imageFile.path));
+
+      request.files.add(multipartFile);
+    }
+
+    // Add other fields
+    request.fields['user_id'] = item.userId.toString();
+    request.fields['nama_item'] = item.namaItem;
+
+    var response = await request.send();
 
     if (response.statusCode == 200) {
-      return Item.fromJson(json.decode(response.body));
+      var responseData = await response.stream.bytesToString();
+      return Item.fromJson(json.decode(responseData));
     } else {
+      var responseData = await response.stream.bytesToString();
+      print('Failed to update item: ${response.statusCode} $responseData');
       throw Exception('Failed to update item');
     }
   }
 
-  Future<void> deleteItem(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/items/$id'));
+  Future<void> deleteItem(int id, String token) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/item/$id'),
+      headers: <String, String>{
+        'Authorization': 'Bearer $token',
+      },
+    );
 
     if (response.statusCode != 204) {
+      print('Failed to delete item: ${response.statusCode} ${response.body}');
       throw Exception('Failed to delete item');
     }
   }
-
+  
   // tamuu 
    Future<List<Tamu>> getTamus() async {
     final response = await http.get(Uri.parse('$baseUrl/tamus'));

@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../models/user.dart';
 import '../models/registeruser.dart';
+
 class AuthProvider with ChangeNotifier {
   User? _user;
   RegisterUser? _userregister;
@@ -12,8 +13,10 @@ class AuthProvider with ChangeNotifier {
   RegisterUser? get registeruser => _userregister;
 
   String? get token => _user?.token;
- Future<void> login(String email, String password) async {
-    final url = Uri.parse('https://weddingcheck.polinema.web.id/api/auth/login');
+
+  Future<void> login(String email, String password) async {
+    // final url = Uri.parse('https://weddingcheck.polinema.web.id/api/auth/login');
+    final url = Uri.parse('https://5ca6-36-85-69-134.ngrok-free.app/api/auth/login');
     final response = await http.post(
       url,
       body: {
@@ -36,7 +39,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> register(String name, String email, String password, String role, String device) async {
-    final url = Uri.parse('https://weddingcheck.polinema.web.id/api/auth/register');
+    // final url = Uri.parse('https://weddingcheck.polinema.web.id/api/auth/register');
+    final url = Uri.parse('https://5ca6-36-85-69-134.ngrok-free.app/api/auth/register');
     final response = await http.post(
       url,
       body: {
@@ -52,7 +56,7 @@ class AuthProvider with ChangeNotifier {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       final userData = responseData['user'];
-      userData['token'] = responseData['token']; 
+      userData['token'] = responseData['token'];
       _userregister = RegisterUser.fromJson(userData);
       final prefs = await SharedPreferences.getInstance();
       prefs.setString('user', json.encode(_user!.toJson()));
@@ -64,7 +68,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
-    final url = Uri.parse('https://weddingcheck.polinema.web.id/api/auth/logout');
+    // final url = Uri.parse('https://weddingcheck.polinema.web.id/api/auth/logout');
+    final url = Uri.parse('https://5ca6-36-85-69-134.ngrok-free.app/api/auth/logout');
     final response = await http.post(
       url,
       headers: {
