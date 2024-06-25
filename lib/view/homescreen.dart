@@ -62,6 +62,11 @@ class _HomeScreenState extends State<HomeScreen> {
               SnackBar(content: Text('Navigated to Management Undangan Item List')),
             );
           }
+          if (state is BottomNavItemSelectedState && state.index == 3) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Navigated to Profile')),
+            );
+          }
         },
         builder: (context, state) {
           if (state is BottomNavItemSelectedState) {
@@ -83,26 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Home Screen'),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ManagementUserScreen()),
-                    );
-                  },
-                  child: Text('Go to Management User'),
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ItemScreen()),
-                    );
-                  },
-                  child: Text('Go to Management Undangan item'),
-                ),
               ],
             ),
           );

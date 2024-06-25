@@ -1,7 +1,5 @@
-// item_event.dart
 import 'package:equatable/equatable.dart';
 import 'dart:io';
-
 import '../../models/item.dart';
 
 abstract class ItemEvent extends Equatable {
@@ -9,6 +7,11 @@ abstract class ItemEvent extends Equatable {
 }
 
 class GetItems extends ItemEvent {
+  @override
+  List<Object> get props => [];
+}
+
+class GetItemsVisitor extends ItemEvent {
   @override
   List<Object> get props => [];
 }

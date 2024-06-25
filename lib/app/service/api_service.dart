@@ -12,7 +12,7 @@ import '../models/order.dart';
 
 class ApiService {
   // final String baseUrl = "https://weddingcheck.polinema.web.id/api";
-  final String baseUrl = "https://5ca6-36-85-69-134.ngrok-free.app/api";
+  final String baseUrl = "https://8613-36-85-69-134.ngrok-free.app/api";
 
 // management-user
   Future<List<Managementuser>> getUsers(String token) async {
@@ -100,6 +100,19 @@ class ApiService {
       throw Exception('Failed to delete order');
     }
   }
+ Future<List<Item>> getItemsVisitor() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/visitor'),
+    ); 
+     if (response.statusCode == 200) {
+      List jsonResponse = json.decode(response.body);
+      return jsonResponse.map((item) => Item.fromJson(item)).toList();
+    } else {
+      print('Failed to load items: ${response.statusCode} ${response.body}');
+      throw Exception('Failed to load items');
+    }
+  }
+
  Future<List<Item>> getItems(String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl/item'),

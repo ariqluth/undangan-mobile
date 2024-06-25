@@ -13,6 +13,7 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
 
   ItemBloc(this.apiService, this.authProvider) : super(ItemInitial()) {
     on<GetItems>(_onGetItems);
+    on<GetItemsVisitor>(_onGetItemsVisitor);
     on<CreateItem>(_onCreateItem);
     on<UpdateItem>(_onUpdateItem);
     on<DeleteItem>(_onDeleteItem);
@@ -22,6 +23,17 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     emit(ItemLoading());
     try {
       final items = await apiService.getItems(authProvider.token!);
+      emit(ItemLoaded(items));
+    } catch (e) {
+      print('Error loading items: $e');
+      emit(ItemError(e.toString()));
+    }
+  }
+
+  void _onGetItemsVisitor(GetItemsVisitor event, Emitter<ItemState> emit) async {
+    emit(ItemLoading());
+    try {
+      final items = await apiService.getItemsVisitor();
       emit(ItemLoaded(items));
     } catch (e) {
       print('Error loading items: $e');

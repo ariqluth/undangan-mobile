@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myapp/view/visitor/halamanutama_screen.dart';
 import 'package:provider/provider.dart';
 import 'app/service/api_service.dart';
 import 'app/service/auth.dart';
@@ -49,6 +50,11 @@ class MyApp extends StatelessWidget {
             ItemBloc(context.read<ApiService>(),
             context.read<AuthProvider>(),)..add(GetItems()),
         ),
+      BlocProvider<ItemBloc>(
+          create: (context) =>
+            ItemBloc(context.read<ApiService>(),
+            context.read<AuthProvider>(),)..add(GetItemsVisitor()),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -58,7 +64,8 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: '/',
         routes: {
-          '/': (context) => AuthWrapper(),
+          '/': (context) => VisitorScreen(),
+          '/masuk': (context) => AuthWrapper(),
           '/homescreen': (context) => HomeScreen(),
           '/dashboardscreen': (context) => DashboardScreen(),
           '/dashboardcustomerscreen': (context) => DashboardCustomerScreen(),
