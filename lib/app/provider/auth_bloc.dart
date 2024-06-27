@@ -7,8 +7,7 @@ import '../service/auth.dart';
 part 'auth_event.dart';
 part 'auth_state.dart';
 
-
- class AuthBloc extends Bloc<AuthEvent, AuthState> {
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthProvider authProvider;
 
   AuthBloc(this.authProvider) : super(AuthInitial()) {
@@ -16,22 +15,14 @@ part 'auth_state.dart';
       try {
         emit(AuthLoading());
         await authProvider.login(event.email, event.password);
-        if (authProvider.user!.roles.contains('super-admin')) {
-          emit(AuthAuthenticatedSuperAdmin(authProvider.user!));
-        } else if (authProvider.user!.roles.contains('employee')) {
-          emit(AuthAuthenticatedEmployee(authProvider.user!));
-        } else if (authProvider.user!.roles.contains('customer')) {
-          emit(AuthAuthenticatedCustomer(authProvider.user!));
-        } else {
-          emit(AuthError('Unknown role'));
-        }
+        _handleUserRole(authProvider.user!, emit);
       } catch (e) {
         print('Login Error: $e');
         emit(AuthError(e.toString()));
       }
     });
 
-  on<RegisterEvent>((event, emit) async {
+    on<RegisterEvent>((event, emit) async {
       try {
         emit(AuthLoading());
         await authProvider.register(event.name, event.email, event.password, event.role, event.device);
@@ -42,7 +33,7 @@ part 'auth_state.dart';
       }
     });
 
- on<LogoutEvent>((event, emit) async {
+    on<LogoutEvent>((event, emit) async {
       try {
         emit(AuthLoading());
         await authProvider.logout();
@@ -53,22 +44,27 @@ part 'auth_state.dart';
       }
     });
 
-     on<AutoLoginEvent>((event, emit) async {
+    on<AutoLoginEvent>((event, emit) async {
       emit(AuthLoading());
       await authProvider.tryAutoLogin();
       if (authProvider.user != null) {
-        if (authProvider.user!.roles.contains('super-admin')) {
-          emit(AuthAuthenticatedSuperAdmin(authProvider.user!));
-        } else if (authProvider.user!.roles.contains('employee')) {
-          emit(AuthAuthenticatedEmployee(authProvider.user!));
-          } else if (authProvider.user!.roles.contains('customer')) {
-          emit(AuthAuthenticatedCustomer(authProvider.user!));
-        } else {
-          emit(AuthError('Unknown role'));
-        }
+        _handleUserRole(authProvider.user!, emit);
       } else {
         emit(AuthUnauthenticated());
       }
     });
+  }
+
+  void _handleUserRole(User user, Emitter<AuthState> emit) {
+    print('User roles: ${user.roles}');
+    if (user.roles.contains('super-admin')) {
+      emit(AuthAuthenticatedSuperAdmin(user));
+    } else if (user.roles.contains('employee')) {
+      emit(AuthAuthenticatedEmployee(user));
+    } else if (user.roles.contains('customer')) {
+      emit(AuthAuthenticatedCustomer(user));
+    } else {
+      emit(AuthError('Unknown role'));
+    }
   }
 }

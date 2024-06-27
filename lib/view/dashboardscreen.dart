@@ -1,6 +1,7 @@
 // screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myapp/app/provider/bottom_nav_bloc.dart';
 import '../app/provider/auth_bloc.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -85,8 +86,79 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      body: Center(
-        child: Text('Welcome to the Dashboard Pegawai Screen!'),
+      body: BlocConsumer<BottomNavBloc, BottomNavState>(
+        listener: (context, state) {
+          if (state is BottomNavItemSelectedState && state.index == 1) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Navigated to Management User')),
+            );
+          }
+          if (state is BottomNavItemSelectedState && state.index == 2) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Navigated to Management Undangan Item List')),
+            );
+          }
+          if (state is BottomNavItemSelectedState && state.index == 3) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Navigated to Profile')),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is BottomNavItemSelectedState) {
+            switch (state.index) {
+              case 0:
+                return Center(child: Text('Home Screen'));
+              case 1:
+                return Center(child: Text('Home Screen'));
+              case 2:
+                return Center(child: Text('Home Screen'));
+              case 3:
+                return Center(child: Text('Profile Screen'));
+              default:
+                return Center(child: Text('Home Screen'));
+            }
+          }
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Home Screen'),
+              ],
+            ),
+          );
+        },
+      ),
+      bottomNavigationBar: BlocBuilder<BottomNavBloc, BottomNavState>(
+        builder: (context, state) {
+          return BottomNavigationBar(
+            currentIndex: state is BottomNavItemSelectedState ? state.index : 0,
+            onTap: (index) {
+              context.read<BottomNavBloc>().add(BottomNavItemSelected(index));
+            },
+            selectedItemColor: Colors.blue, // Color for selected item
+            unselectedItemColor: Colors.black, // Color for unselected items
+            showUnselectedLabels: true, // Show labels for unselected items
+            items: [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.list),
+                label: 'Order',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.settings),
+                label: 'Setting',
+              ),
+            ],
+          );
+        },
       ),
     );
   }

@@ -1,17 +1,19 @@
 class Order {
-  final int id;
+  final int? id;
   final int profileId;
-  final String itemId;
+  final int itemId;
   final String tanggalTerakhir;
   final String kode;
+  final String jumlah;
   final String status;
 
   Order({
-    required this.id,
+    this.id,
     required this.profileId,
     required this.itemId,
     required this.tanggalTerakhir,
     required this.kode,
+    required this.jumlah,
     required this.status,
   });
 
@@ -22,6 +24,7 @@ class Order {
       itemId: json['item_id'],
       tanggalTerakhir: json['tanggal_terakhir'],
       kode: json['kode'],
+      jumlah: json['jumlah'],
       status: json['status'],
     );
   }
@@ -33,6 +36,7 @@ class Order {
       'item_id': itemId,
       'tanggal_terakhir': tanggalTerakhir,
       'kode': kode,
+      'jumlah': jumlah,
       'status': status,
     };
   }

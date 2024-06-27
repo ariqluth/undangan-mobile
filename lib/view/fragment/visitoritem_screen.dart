@@ -5,21 +5,10 @@ import 'package:myapp/app/provider/item/item_bloc.dart';
 import 'package:myapp/app/provider/item/item_event.dart';
 import 'package:myapp/app/provider/item/item_state.dart';
 
-class VisitorScreen extends StatelessWidget {
+class VisitorItemScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Selamat Datang'),
-         actions: [
-          IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () {
-              Navigator.of(context).pushNamed('/loginscreen');
-            },
-          ),
-        ],
-      ),
       body: BlocBuilder<ItemBloc, ItemState>(
         builder: (context, state) {
           if (state is ItemLoading) {
@@ -38,7 +27,7 @@ class VisitorScreen extends StatelessWidget {
                 return GestureDetector(
                   onTap: () {
                     Navigator.of(context).pushNamed(
-                      '/itemdetailscreen',
+                      '/visitoritemdetailscreen',
                       arguments: item,
                     );
                   },

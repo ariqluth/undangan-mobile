@@ -37,6 +37,15 @@ class UpdateItem extends ItemEvent {
   List<Object> get props => [id, item, if (imageFile != null) imageFile!];
 }
 
+class showItem extends ItemEvent {
+  final int id;
+
+  const showItem(this.id);
+
+  @override
+  List<Object> get props => [id];
+}
+
 class DeleteItem extends ItemEvent {
   final int id;
 

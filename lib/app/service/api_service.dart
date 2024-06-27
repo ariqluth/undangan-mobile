@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:myapp/app/models/profile.dart';
 import 'package:path/path.dart';
 import 'package:async/async.dart';
 
@@ -12,7 +13,7 @@ import '../models/order.dart';
 
 class ApiService {
   // final String baseUrl = "https://weddingcheck.polinema.web.id/api";
-  final String baseUrl = "https://8613-36-85-69-134.ngrok-free.app/api";
+  final String baseUrl = "https://98b6-180-248-22-3.ngrok-free.app/api";
 
 // management-user
   Future<List<Managementuser>> getUsers(String token) async {
@@ -51,19 +52,19 @@ class ApiService {
 
 // order
  Future<List<Order>> getOrders(String token) async {
-    final response = await http.get(Uri.parse('$baseUrl/orders'));
+    final response = await http.get(Uri.parse('$baseUrl/order'));
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
       return jsonResponse.map((order) => Order.fromJson(order)).toList();
     } else {
-      throw Exception('Failed to load orders');
+      throw Exception('Failed to load order');
     }
   }
 
   Future<Order> createOrder(Order order, String token) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/orders'),
+      Uri.parse('$baseUrl/order'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -77,9 +78,26 @@ class ApiService {
     }
   }
 
+  Future<Order> showOrder(int id, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/order/$id'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = json.decode(response.body);
+      return Order.fromJson(jsonResponse);
+    } else {
+      print('Failed to load order: ${response.statusCode} ${response.body}');
+      throw Exception('Failed to load order');
+    }
+  }
+
   Future<Order> updateOrder(int id, Order order, String token) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/orders/$id'),
+      Uri.parse('$baseUrl/order/$id'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -94,7 +112,7 @@ class ApiService {
   }
 
   Future<void> deleteOrder(int id, String token) async {
-    final response = await http.delete(Uri.parse('$baseUrl/orders/$id'));
+    final response = await http.delete(Uri.parse('$baseUrl/order/$id'));
 
     if (response.statusCode != 204) {
       throw Exception('Failed to delete order');
@@ -159,17 +177,32 @@ class ApiService {
     }
   }
 
+  Future<Item> showItem(int id, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/item/$id'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = json.decode(response.body);
+      return Item.fromJson(jsonResponse);
+    } else {
+      print('Failed to load item: ${response.statusCode} ${response.body}');
+      throw Exception('Failed to load item');
+    }
+  }
+
    Future<Item> updateItem(int id, Item item, String token, File? imageFile) async {
     var uri = Uri.parse('$baseUrl/item/$id');
     var request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $token'
       ..headers['Content-Type'] = 'multipart/form-data';
 
-    // Add the _method field to override the HTTP method
     request.fields['_method'] = 'PUT';
 
     if (imageFile != null) {
-      // Attach the image file
       var stream = http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
       var length = await imageFile.length();
       var multipartFile = http.MultipartFile('gambar', stream, length,
@@ -178,7 +211,6 @@ class ApiService {
       request.files.add(multipartFile);
     }
 
-    // Add other fields
     request.fields['user_id'] = item.userId.toString();
     request.fields['nama_item'] = item.namaItem;
 
@@ -257,6 +289,94 @@ class ApiService {
 
     if (response.statusCode != 204) {
       throw Exception('Failed to delete tamu');
+    }
+  }
+
+  // profile
+  Future<List<Profile>> getProfile(String token) async {
+    final response = await http.get(Uri.parse('$baseUrl/profile'),
+    headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List jsonResponse = json.decode(response.body);
+      return jsonResponse.map((profile) => Profile.fromJson(profile)).toList();
+    } else {
+      print('Failed to load profile: ${response.statusCode} ${response.body}');
+      throw Exception('Failed to load profile');
+    }
+  }
+
+  Future<Profile> createProfile(Profile profile, String token) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/profile/'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(profile.toJson()),
+    );
+
+    print('Request: ${response.request}');
+    print('Response: ${response.body}');
+
+    if (response.statusCode == 201) {
+      return Profile.fromJson(jsonDecode(response.body));
+    } else {
+      print('Error: ${response.statusCode} - ${response.body}');
+      throw Exception('Failed to create profile');
+    }
+  }
+
+  Future<Profile> showProfile(int id, String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/profile/$id'),
+         headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = json.decode(response.body);
+      return Profile.fromJson(jsonResponse);
+    } else {
+      print('Failed to load profile: ${response.statusCode} ${response.body}');
+      throw Exception('Failed to load profile');
+    }
+  }
+
+  Future<Profile> updateProfile(int id, Profile profile, String token) async {
+   var uri = Uri.parse('$baseUrl/profile/$id');
+    var request = http.MultipartRequest('POST', uri)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..headers['Content-Type'] = 'application/json; charset=UTF-8';
+
+    request.fields['_method'] = 'PUT';
+
+    request.fields['user_id'] = profile.userId.toString();
+    request.fields['username'] = profile.username;
+    request.fields['nomer_telepon'] = profile.nomer_telepon;
+    request.fields['alamat'] = profile.alamat;
+
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      var responseData = await response.stream.bytesToString();
+      return Profile.fromJson(json.decode(responseData));
+    } else {
+      var responseData = await response.stream.bytesToString();
+      print('Failed to update profile: ${response.statusCode} $responseData');
+      throw Exception('Failed to update profile');
+    }
+  }
+
+  Future<void> deleteProfile(int id, String token) async {
+    final response = await http.delete(Uri.parse('$baseUrl/profile/$id'));
+
+    if (response.statusCode != 204) {
+      throw Exception('Failed to delete Profile');
     }
   }
 }

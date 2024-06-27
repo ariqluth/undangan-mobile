@@ -23,6 +23,16 @@ class UpdateUserVerifiedAt extends UserEvent {
   List<Object> get props => [id, emailVerifiedAt];
 }
 
+class UserVerifiedAt extends UserEvent {
+  final int id;
+  final String emailVerifiedAt;
+
+  const UserVerifiedAt(this.id, this.emailVerifiedAt);
+
+  @override
+  List<Object> get props => [id, emailVerifiedAt];
+}
+
 // States
 abstract class UserState extends Equatable {
   const UserState();
@@ -64,9 +74,10 @@ class ManagementUserBlock extends Bloc<UserEvent, UserState> {
   ManagementUserBlock(this.userRepository, this.authProvider) : super(UserInitial()) {
     on<GetUsers>(_onGetUsers);
     on<UpdateUserVerifiedAt>(_onUpdateUserVerifiedAt);
+    on<UserVerifiedAt>(_onUserVerifiedAt);
   }
 
-  void _onGetUsers(GetUsers event, Emitter<UserState> emit) async {
+   void _onGetUsers(GetUsers event, Emitter<UserState> emit) async {
     emit(UserLoading());
     try {
       final users = await userRepository.getUsers(authProvider.token!);
@@ -83,6 +94,18 @@ class ManagementUserBlock extends Bloc<UserEvent, UserState> {
       final users = await userRepository.getUsers(authProvider.token!);
       emit(UserLoaded(users));
     } catch (e) {
+      emit(UserError(e.toString()));
+    }
+  }
+
+   void _onUserVerifiedAt(UserVerifiedAt event, Emitter<UserState> emit) async {
+    emit(UserLoading());
+    try {
+      await userRepository.updateUserVerifiedAt(event.id, event.emailVerifiedAt, authProvider.token!);
+      final users = await userRepository.getUsers(authProvider.token!);
+      emit(UserLoaded(users));
+    } catch (e) {
+      print('Error verifying user: $e');
       emit(UserError(e.toString()));
     }
   }

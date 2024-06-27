@@ -65,6 +65,17 @@ class ItemBloc extends Bloc<ItemEvent, ItemState> {
     }
   }
 
+  void _showItem(showItem event, Emitter<ItemState> emit) async{
+    emit(ItemLoading());
+    try{
+      final item = await apiService.showItem(event.id, authProvider.token!);
+      emit(ItemLoaded([item]));
+    }catch(e){
+      print('Error loading item: $e');
+      emit(ItemError(e.toString()));
+    }
+  }
+
  void _onDeleteItem(DeleteItem event, Emitter<ItemState> emit) async {
     emit(ItemLoading());
     try {
