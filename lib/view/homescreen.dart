@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:myapp/view/fragment/admin/orderadmin_screen.dart';
 import 'package:myapp/view/masterdata/item_screen.dart';
 import '../app/provider/auth_bloc.dart';
 import '../view/management/managementuser_screen.dart';
@@ -16,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('Selamat Datang'),
         actions: [
           BlocListener<AuthBloc, AuthState>(
             listener: (context, state) {
@@ -78,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
               case 2:
                 return ItemScreen();
               case 3:
-                return Center(child: Text('Profile Screen'));
+                return ShowOrderAdminProfileScreen();
               default:
                 return Center(child: Text('Home Screen'));
             }
@@ -118,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.settings),
-                label: 'Setting',
+                label: 'Management Order',
               ),
             ],
           );

@@ -1,5 +1,7 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:myapp/app/models/item.dart';
 import 'package:myapp/app/models/order.dart';
 import 'package:myapp/app/provider/order/order_bloc.dart';
@@ -8,16 +10,18 @@ import 'package:myapp/app/provider/order/order_state.dart';
 import 'package:myapp/app/service/auth.dart';
 
 class VisitorItemDetailScreen extends StatelessWidget {
+  final int userId;
   final Item item;
   final _formKey = GlobalKey<FormState>();
-  final _profileIdController = TextEditingController();
-  final _itemIdController = TextEditingController();
-  final _kodeController = TextEditingController();
-  final _tanggalTerakhirController = TextEditingController();
   final _jumlahController = TextEditingController();
-  final _statusController = TextEditingController();
 
-  VisitorItemDetailScreen({required this.item});
+  VisitorItemDetailScreen({required this.item, required this.userId});
+
+  String _generateRandomCode(int length) {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final rand = Random();
+    return List.generate(length, (index) => chars[rand.nextInt(chars.length)]).join();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,61 +46,11 @@ class VisitorItemDetailScreen extends StatelessWidget {
               child: Column(
                 children: [
                   TextFormField(
-                    controller: _profileIdController,
-                    decoration: InputDecoration(labelText: 'Profile ID'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter Profile ID';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _itemIdController,
-                    decoration: InputDecoration(labelText: 'Item ID'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter Item ID';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _kodeController,
-                    decoration: InputDecoration(labelText: 'Kode'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter Kode';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _tanggalTerakhirController,
-                    decoration: InputDecoration(labelText: 'Tanggal Terakhir'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter Tanggal Terakhir';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
                     controller: _jumlahController,
                     decoration: InputDecoration(labelText: 'Jumlah'),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter Jumlah';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _statusController,
-                    decoration: InputDecoration(labelText: 'Status'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter Status';
                       }
                       return null;
                     },
@@ -109,8 +63,14 @@ class VisitorItemDetailScreen extends StatelessWidget {
                           SnackBar(content: Text(state.message)),
                         );
                       } else if (state is OrderLoaded) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Order submitted successfully')),
+                        Fluttertoast.showToast(
+                          msg: "Berhasil melakukan order",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.green,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
                         );
                       }
                     },
@@ -126,13 +86,14 @@ class VisitorItemDetailScreen extends StatelessWidget {
                               Navigator.of(context).pushNamed('/loginscreen');
                             } else {
                               final order = Order(
-                                profileId: int.parse(_profileIdController.text),
-                                itemId: int.parse(_itemIdController.text),
-                                kode: _kodeController.text,
-                                tanggalTerakhir: _tanggalTerakhirController.text,
+                                profile_id: userId,
+                                item_id: item.id!,
+                                kode: _generateRandomCode(8), // Generate random alphanumeric code
+                                tanggal_terakhir: DateTime.now().toString(), // Set current date
                                 jumlah: _jumlahController.text,
-                                status: _statusController.text,
+                                status: 'pending', // Set default status
                               );
+                              print('Order Data: ${order.toJson()}'); // Print order data
                               context.read<OrderBloc>().add(CreateOrder(order));
                             }
                           }

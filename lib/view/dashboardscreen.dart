@@ -2,6 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myapp/app/provider/bottom_nav_bloc.dart';
+import 'package:myapp/view/fragment/employee/orderemployee_screen.dart';
+import 'package:myapp/view/fragment/employee/orderlist_screen.dart';
+import 'package:myapp/view/fragment/employee/orderverifyemployee_screen.dart';
+import 'package:myapp/view/fragment/profile_screen.dart';
 import '../app/provider/auth_bloc.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -110,11 +114,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
               case 0:
                 return Center(child: Text('Home Screen'));
               case 1:
-                return Center(child: Text('Home Screen'));
+                 final user = context.read<AuthBloc>().authProvider.user;
+                return ShowProfileScreen(userId: user!.id);
               case 2:
-                return Center(child: Text('Home Screen'));
+                return ShowVerifyProfileScreen();
               case 3:
-                return Center(child: Text('Profile Screen'));
+                final user = context.read<AuthBloc>().authProvider.user;
+                return ShowVerifyProfilePetugasScreen(userId: user!.id);
+              case 4:
+                final user = context.read<AuthBloc>().authProvider.user;
+                return ShowOrderlistScreen(userId: user!.id);
               default:
                 return Center(child: Text('Home Screen'));
             }
@@ -154,7 +163,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.settings),
-                label: 'Setting',
+                label: 'VerifyOrder',
+              ),
+               BottomNavigationBarItem(
+                icon: Icon(Icons.settings),
+                label: 'ListOrder',
               ),
             ],
           );

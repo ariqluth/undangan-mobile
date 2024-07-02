@@ -1,7 +1,5 @@
 // item_bloc.dart
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
-import '../../models/item.dart';
 import '../../service/api_service.dart';
 import '../../service/auth.dart';
 import 'item_event.dart';

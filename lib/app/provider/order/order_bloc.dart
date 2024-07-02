@@ -1,7 +1,5 @@
 // Order_bloc.dart
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
-import '../../models/order.dart';
 import '../../service/api_service.dart';
 import '../../service/auth.dart';
 import 'order_event.dart';
@@ -16,6 +14,12 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<CreateOrder>(_onCreateOrder);
     on<UpdateOrder>(_onUpdateOrder);
     on<DeleteOrder>(_onDeleteOrder);
+    on<showOrder>(_showOrder);
+    on<showOrderProfile>(_showOrderProfile);
+    on<ShowDropdown>(_showDropdown);
+    on<BroadcastOrder>(_onBroadcastOrder);
+    on<CloseOrder>(_onCloseOrder);
+    on<verifyStatusOrder>(_onVerifyStatusOrder);
   }
 
   void _onGetOrders(GetOrders event, Emitter<OrderState> emit) async {
@@ -65,6 +69,28 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     }
   }
 
+   void _showOrderProfile(showOrderProfile event, Emitter<OrderState> emit) async {
+    emit(OrderLoading());
+    try {
+      final orders = await apiService.showOrderProfile(event.id, authProvider.token!);
+      emit(OrderLoaded(orders));
+    } catch (e) {
+      print('Error loading orders: $e');
+      emit(OrderError(e.toString()));
+    }
+  }
+
+void _showDropdown(ShowDropdown event, Emitter<OrderState> emit) async {
+    emit(OrderLoading());
+    try {
+      final Order = await apiService.showdropdown(event.orderListId, authProvider.token!);
+      emit(OrderLoaded(Order));
+    } catch (e) {
+      print('Error loading orders dropdown: $e');
+      emit(OrderError(e.toString()));
+    }
+  }
+
  void _onDeleteOrder(DeleteOrder event, Emitter<OrderState> emit) async {
     emit(OrderLoading());
     try {
@@ -73,6 +99,39 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       emit(OrderLoaded(Orders));
     } catch (e) {
       print('Error deleting Order: $e');
+      emit(OrderError(e.toString()));
+    }
+  }
+
+  void _onBroadcastOrder(BroadcastOrder event, Emitter<OrderState> emit) async {
+    emit(OrderLoading());
+    try {
+      await apiService.broadcastOrder(event.id, authProvider.token!);
+      final orders = await apiService.getOrders(authProvider.token!);
+      emit(OrderLoaded(orders));
+    } catch (e) {
+      emit(OrderError(e.toString()));
+    }
+  }
+
+   void _onCloseOrder(CloseOrder event, Emitter<OrderState> emit) async {
+    emit(OrderLoading());
+    try {
+      await apiService.closeOrder(event.id, authProvider.token!);
+      final orders = await apiService.getOrders(authProvider.token!);
+      emit(OrderLoaded(orders));
+    } catch (e) {
+      emit(OrderError(e.toString()));
+    }
+  }
+
+  void _onVerifyStatusOrder(verifyStatusOrder event, Emitter<OrderState> emit) async {
+    emit(OrderLoading());
+    try {
+      await apiService.verifyStatusOrder(authProvider.token!);
+      final orders = await apiService.verifyStatusOrder(authProvider.token!);
+      emit(OrderLoaded(orders));
+    } catch (e) {
       emit(OrderError(e.toString()));
     }
   }

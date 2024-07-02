@@ -8,8 +8,6 @@ import '../../app/models/item.dart';
 import '../../app/provider/item/item_bloc.dart';
 import '../../app/provider/item/item_event.dart';
 import '../../app/provider/item/item_state.dart';
-import '../../app/service/api_service.dart';
-import '../../app/service/auth.dart';
 
 class ItemScreen extends StatelessWidget {
   @override

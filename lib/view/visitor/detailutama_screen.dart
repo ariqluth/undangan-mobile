@@ -126,10 +126,10 @@ class ItemDetailScreen extends StatelessWidget {
                               Navigator.of(context).pushNamed('/loginscreen');
                             } else {
                               final order = Order(
-                                profileId: int.parse(_profileIdController.text),
-                                itemId: int.parse(_itemIdController.text),
+                                profile_id: int.parse(_profileIdController.text),
+                                item_id: int.parse(_itemIdController.text),
                                 kode: _kodeController.text,
-                                tanggalTerakhir: _tanggalTerakhirController.text,
+                                tanggal_terakhir: _tanggalTerakhirController.text,
                                 jumlah: _jumlahController.text,
                                 status: _statusController.text,
                               );

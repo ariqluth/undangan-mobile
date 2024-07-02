@@ -6,10 +6,11 @@ import 'package:myapp/app/provider/bottom_nav_bloc.dart';
 import 'package:myapp/app/provider/management_user_block.dart';
 import 'package:myapp/app/provider/profile/profile_bloc.dart';
 import 'package:myapp/app/provider/profile/profile_event.dart';
-import 'package:myapp/app/provider/profile/profile_state.dart';
-import 'package:myapp/app/service/auth.dart';
+import 'package:myapp/view/fragment/customer/ordercustomer_screen.dart';
+import 'package:myapp/view/fragment/profile_screen.dart';
 import 'package:myapp/view/fragment/visitoritem_screen.dart';
 class DashboardCustomerScreen extends StatefulWidget {
+  
   @override
   _DashboardCustomerScreenState createState() => _DashboardCustomerScreenState();
 }
@@ -181,9 +182,11 @@ class _DashboardCustomerScreenState extends State<DashboardCustomerScreen> {
               case 0:
                 return VisitorItemScreen();
               case 1:
-                return Center(child: Text('Home Screen'));
+                 final user = context.read<AuthBloc>().authProvider.user;
+                return ShowProfileScreen(userId: user!.id);
               case 2:
-                return Center(child: Text('Home Screen'));
+                final user = context.read<AuthBloc>().authProvider.user;
+                return ShowOrderProfileScreen(profileId: user!.id);
               case 3:
                 return Center(child: Text('Profile Screen'));
               default:
@@ -194,7 +197,7 @@ class _DashboardCustomerScreenState extends State<DashboardCustomerScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Home Screen'),
+                VisitorItemScreen(),
               ],
             ),
           );

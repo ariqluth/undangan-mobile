@@ -3,8 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myapp/app/models/item.dart';
 import 'package:myapp/app/provider/order/order_bloc.dart';
 import 'package:myapp/app/provider/order/order_event.dart';
+import 'package:myapp/app/provider/orderlist/orderlist_bloc.dart';
+import 'package:myapp/app/provider/orderlist/orderlist_event.dart';
 import 'package:myapp/app/provider/profile/profile_bloc.dart';
 import 'package:myapp/app/provider/profile/profile_event.dart';
+import 'package:myapp/app/provider/undangan/undangan_bloc.dart';
+import 'package:myapp/app/provider/undangan/undangan_event.dart';
+import 'package:myapp/app/provider/verifyorder/verifyorder_bloc.dart';
+import 'package:myapp/app/provider/verifyorder/verifyorder_event.dart';
 import 'package:myapp/view/fragment/visitordetailitem_screen.dart';
 import 'package:myapp/view/visitor/detailutama_screen.dart';
 import 'package:myapp/view/visitor/halamanutama_screen.dart';
@@ -62,16 +68,37 @@ class MyApp extends StatelessWidget {
             ItemBloc(context.read<ApiService>(),
             context.read<AuthProvider>(),)..add(GetItemsVisitor()),
         ),
-      BlocProvider<OrderBloc>(
-          create: (context) =>
-            OrderBloc(context.read<ApiService>(),
-            context.read<AuthProvider>(),)..add(GetOrders()),
-        ),
         BlocProvider<ProfileBloc>(
           create: (context) =>
             ProfileBloc(context.read<ApiService>(),
             context.read<AuthProvider>(),)..add(GetProfiles()),
         ),
+           BlocProvider<OrderBloc>(
+          create: (context) =>
+            OrderBloc(context.read<ApiService>(),
+            context.read<AuthProvider>(),)..add(GetOrders()),
+        ),
+          BlocProvider<OrderBloc>(
+          create: (context) =>
+            OrderBloc(context.read<ApiService>(),
+            context.read<AuthProvider>(),)..add(verifyStatusOrder()),
+        ),
+          BlocProvider<OrderVerifyBloc>(
+          create: (context) =>
+            OrderVerifyBloc(context.read<ApiService>(),
+            context.read<AuthProvider>(),)..add(GetOrderVerify()),
+        ),
+           BlocProvider<OrderlistBloc>(
+          create: (context) =>
+            OrderlistBloc(context.read<ApiService>(),
+            context.read<AuthProvider>(),)..add(GetOrderLists()),
+        ),
+          BlocProvider<UndanganBloc>(
+          create: (context) =>
+            UndanganBloc(context.read<ApiService>(),
+            context.read<AuthProvider>(),)..add(GetUndangans()),
+        ),
+          
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -90,8 +117,14 @@ class MyApp extends StatelessWidget {
           '/registerscreen': (context) => RegisterScreen(),
           '/managementuserscreen': (context) => ManagementUserScreen(),
           '/itemscreen': (context) => ItemScreen(),
-         '/visitoritemdetailscreen': (context) => ItemDetailScreen(item: ModalRoute.of(context)!.settings.arguments as Item),
-         '/itemdetailscreen': (context) => VisitorItemDetailScreen(item: ModalRoute.of(context)!.settings.arguments as Item),
+          '/visitoritemdetailscreen': (context) => ItemDetailScreen(item: ModalRoute.of(context)!.settings.arguments as Item),
+          '/itemdetailscreen': (context) {
+            final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+            return VisitorItemDetailScreen(
+              item: args['item'] as Item,
+              userId: args['userId'] as int,
+            );
+          },
         },
       ),
     );

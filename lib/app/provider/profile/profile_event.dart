@@ -22,13 +22,13 @@ class CreateProfile extends ProfileEvent {
 }
 
 class UpdateProfile extends ProfileEvent {
-  final int id;
+  final int user_id;
   final Profile profile;
 
-  const UpdateProfile(this.id, this.profile);
+  const UpdateProfile(this.user_id, this.profile);
 
   @override
-  List<Object> get props => [id, profile];
+  List<Object> get props => [user_id, profile];
 }
 
 class DeleteProfile extends ProfileEvent {
@@ -41,10 +41,10 @@ class DeleteProfile extends ProfileEvent {
 }
 
 class ShowProfile extends ProfileEvent {
-  final int id;
+  final int user_id;
 
-  const ShowProfile(this.id);
+  const ShowProfile(this.user_id);
 
   @override
-  List<Object> get props => [id];
+  List<Object> get props => [user_id];
 }
