@@ -95,7 +95,7 @@ class TamuShowTable extends StatelessWidget {
       itemCount: tamus.length,
       itemBuilder: (context, index) {
         final tamu = tamus[index];
-        final message = 'http://127.0.0.1:8000/undangan/${tamu.undangan_id}/?nama_tamu=${tamu.nama_tamu}';
+        final message = 'Undangan Pernikahan : http://127.0.0.1:8000/undangan/${tamu.undangan_id}/?nama_tamu=${tamu.nama_tamu}';
 
         return Card(
           margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
