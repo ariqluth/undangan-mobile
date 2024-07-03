@@ -9,8 +9,8 @@ import 'package:myapp/app/provider/profile/profile_event.dart';
 import 'package:myapp/view/fragment/customer/ordercustomer_screen.dart';
 import 'package:myapp/view/fragment/profile_screen.dart';
 import 'package:myapp/view/fragment/visitoritem_screen.dart';
+
 class DashboardCustomerScreen extends StatefulWidget {
-  
   @override
   _DashboardCustomerScreenState createState() => _DashboardCustomerScreenState();
 }
@@ -32,7 +32,8 @@ class _DashboardCustomerScreenState extends State<DashboardCustomerScreen> {
       _showVerificationDialog(context, user.id);
     }
   }
- void _showVerificationDialog(BuildContext context, int userId) {
+
+  void _showVerificationDialog(BuildContext context, int userId) {
     final _formKey = GlobalKey<FormState>();
     final _nameController = TextEditingController();
     final _emailController = TextEditingController();
@@ -44,7 +45,7 @@ class _DashboardCustomerScreenState extends State<DashboardCustomerScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Isi Profile terlebih dahulu'),
-          content: SingleChildScrollView( // Wrap the content in SingleChildScrollView
+          content: SingleChildScrollView(
             child: Form(
               key: _formKey,
               child: Column(
@@ -182,7 +183,7 @@ class _DashboardCustomerScreenState extends State<DashboardCustomerScreen> {
               case 0:
                 return VisitorItemScreen();
               case 1:
-                 final user = context.read<AuthBloc>().authProvider.user;
+                final user = context.read<AuthBloc>().authProvider.user;
                 return ShowProfileScreen(userId: user!.id);
               case 2:
                 final user = context.read<AuthBloc>().authProvider.user;
@@ -205,8 +206,12 @@ class _DashboardCustomerScreenState extends State<DashboardCustomerScreen> {
       ),
       bottomNavigationBar: BlocBuilder<BottomNavBloc, BottomNavState>(
         builder: (context, state) {
+          int currentIndex = 0;
+          if (state is BottomNavItemSelectedState) {
+            currentIndex = state.index;
+          }
           return BottomNavigationBar(
-            currentIndex: state is BottomNavItemSelectedState ? state.index : 0,
+            currentIndex: currentIndex,
             onTap: (index) {
               context.read<BottomNavBloc>().add(BottomNavItemSelected(index));
             },

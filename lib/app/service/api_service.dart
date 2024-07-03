@@ -16,7 +16,7 @@ import '../models/order.dart';
 
 class ApiService {
   // final String baseUrl = "https://weddingcheck.polinema.web.id/api";
-  final String baseUrl = "https://1614-2001-448a-5040-4bfb-98a1-5822-16d5-4b55.ngrok-free.app/api";
+  final String baseUrl = "https://6751-2001-448a-5040-4bfb-6812-d32-3b10-4316.ngrok-free.app/api";
 
 // management-user
   Future<List<Managementuser>> getUsers(String token) async {
@@ -336,38 +336,83 @@ Future<List<Order>> verifyStatusOrder(String token) async {
   }
   
   // tamuu 
-   Future<List<Tamu>> getTamus() async {
-    final response = await http.get(Uri.parse('$baseUrl/tamus'));
+   Future<List<Tamu>> getTamu(String token) async {
+     final response = await http.get(
+      Uri.parse('$baseUrl/tamu'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
       return jsonResponse.map((tamu) => Tamu.fromJson(tamu)).toList();
     } else {
-      throw Exception('Failed to load tamus');
+      print('Failed to load items: ${response.statusCode} ${response.body}');
+      throw Exception('Failed to load items');
     }
   }
 
-  Future<Tamu> createTamu(Tamu tamu) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/tamus'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(tamu.toJson()),
-    );
+  Future<void> createTamu(
+    int undangan_id,
+    String nama_tamu,
+    String email_tamu,
+    String nomer_tamu,
+    String alamat_tamu,
+    String status,
+    String kategori,
+    String kodeqr,
+    String tipe_undangan,
+    String token,
+) async {
+  final url = '$baseUrl/tamu';
+  print('Requesting: $url');
+  print('Using token: $token');
+  print('Request body: ${json.encode({
+    'undangan_id': undangan_id,
+    'nama_tamu': nama_tamu,
+    'email_tamu': email_tamu,
+    'nomer_tamu': nomer_tamu,
+    'alamat_tamu': alamat_tamu,
+    'status': status,
+    'kategori': kategori,
+    'kodeqr': kodeqr,
+    'tipe_undangan': tipe_undangan,
+  })}');
 
-    if (response.statusCode == 201) {
-      return Tamu.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to create tamu');
-    }
+  final response = await http.post(
+    Uri.parse(url),
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer $token',
+    },
+    body: json.encode({
+    'undangan_id': undangan_id,
+    'nama_tamu': nama_tamu,
+    'email_tamu': email_tamu,
+    'nomer_tamu': nomer_tamu,
+    'alamat_tamu': alamat_tamu,
+    'status': status,
+    'kategori': kategori,
+    'kodeqr': kodeqr,
+    'tipe_undangan': tipe_undangan,
+    }),
+  );
+
+  print('Response status: ${response.statusCode}');
+  print('Response body: ${response.body}');
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to create Tamu');
   }
+}
 
-  Future<Tamu> updateTamu(int id, Tamu tamu) async {
+  Future<Tamu> updateTamu(int id, Tamu tamu, String token) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/tamus/$id'),
+      Uri.parse('$baseUrl/tamu/$id'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode(tamu.toJson()),
     );
@@ -379,9 +424,60 @@ Future<List<Order>> verifyStatusOrder(String token) async {
     }
   }
 
-  Future<void> deleteTamu(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/tamus/$id'));
+  Future<Tamu> showTamu(int id, String token) async {
+    final response = await http.get(Uri.parse('$baseUrl/tamu/$id'),
+    headers: {
+        'Authorization': 'Bearer $token',
+    }
+    );
+    
+   if (response.statusCode == 200) {
+    var jsonResponse = json.decode(response.body);
+    if (jsonResponse['success']) {
+     final jsonResponse = json.decode(response.body);
+      final tamuJson = jsonResponse['data']; // Sesuaikan dengan struktur respons API Anda
+      return Tamu.fromJson(tamuJson);
+    } else {
+      throw Exception('Failed to load tamu list: ${jsonResponse['message']}');
+    }
+  } else {
+    print('Failed to load tamu: ${response.statusCode} ${response.body}');
+    throw Exception('Failed to load tamu list');
+  }
+  }
 
+ Future<List<Tamu>> ShowTamubyPetugas(int undangan_id, String token) async {
+  final response = await http.get(
+    Uri.parse('$baseUrl/tamu/petugas/$undangan_id'),
+    headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    var jsonResponse = json.decode(response.body);
+    if (jsonResponse['success']) {
+      List<dynamic> tamuListJson = jsonResponse['data'];
+      List<Tamu> tamuList = tamuListJson.map((json) => Tamu.fromJson(json)).toList();
+      return tamuList;
+    } else {
+      throw Exception('Failed to load tamu list: ${jsonResponse['message']}');
+    }
+  } else {
+    print('Failed to load tamu: ${response.statusCode} ${response.body}');
+    throw Exception('Failed to load tamu list');
+  }
+}
+
+
+  
+  Future<void> deleteTamu(int id, String token) async {
+    final response = await http.delete(Uri.parse('$baseUrl/tamu/$id'),
+    headers: {
+        'Authorization': 'Bearer $token',
+    }
+    );
     if (response.statusCode != 204) {
       throw Exception('Failed to delete tamu');
     }

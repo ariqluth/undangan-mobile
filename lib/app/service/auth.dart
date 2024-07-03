@@ -16,7 +16,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> login(String email, String password) async {
     // final url = Uri.parse('https://weddingcheck.polinema.web.id/api/auth/login');
-    final url = Uri.parse('https://1614-2001-448a-5040-4bfb-98a1-5822-16d5-4b55.ngrok-free.app/api/auth/login');
+    final url = Uri.parse('https://6751-2001-448a-5040-4bfb-6812-d32-3b10-4316.ngrok-free.app/api/auth/login');
     final response = await http.post(
       url,
       body: {
@@ -40,7 +40,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> register(String name, String email, String password, String role, String device) async {
     // final url = Uri.parse('https://weddingcheck.polinema.web.id/api/auth/register');
-    final url = Uri.parse('https://1614-2001-448a-5040-4bfb-98a1-5822-16d5-4b55.ngrok-free.app/api/auth/register');
+    final url = Uri.parse('https://6751-2001-448a-5040-4bfb-6812-d32-3b10-4316.ngrok-free.app/api/auth/register');
     final response = await http.post(
       url,
       body: {
@@ -69,7 +69,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> logout() async {
     // final url = Uri.parse('https://weddingcheck.polinema.web.id/api/auth/logout');
-    final url = Uri.parse('https://1614-2001-448a-5040-4bfb-98a1-5822-16d5-4b55.ngrok-free.app/api/auth/logout');
+    final url = Uri.parse('https://6751-2001-448a-5040-4bfb-6812-d32-3b10-4316.ngrok-free.app/api/auth/logout');
     final response = await http.post(
       url,
       headers: {

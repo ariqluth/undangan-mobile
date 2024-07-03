@@ -7,6 +7,8 @@ import 'package:myapp/app/provider/orderlist/orderlist_bloc.dart';
 import 'package:myapp/app/provider/orderlist/orderlist_event.dart';
 import 'package:myapp/app/provider/profile/profile_bloc.dart';
 import 'package:myapp/app/provider/profile/profile_event.dart';
+import 'package:myapp/app/provider/tamu/tamu_bloc.dart';
+import 'package:myapp/app/provider/tamu/tamu_event.dart';
 import 'package:myapp/app/provider/undangan/undangan_bloc.dart';
 import 'package:myapp/app/provider/undangan/undangan_event.dart';
 import 'package:myapp/app/provider/verifyorder/verifyorder_bloc.dart';
@@ -29,7 +31,11 @@ import 'view/dashboardcustomerscreen.dart';
 import 'view/registerscreen.dart';
 import 'view/management/managementuser_screen.dart';
 import 'view/masterdata/item_screen.dart';
-void main() {
+import 'package:path_provider/path_provider.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final directory = await getApplicationDocumentsDirectory();
+  print('Application Documents Directory: ${directory.path}');
   runApp(const MyApp());
 }
 
@@ -98,6 +104,12 @@ class MyApp extends StatelessWidget {
             UndanganBloc(context.read<ApiService>(),
             context.read<AuthProvider>(),)..add(GetUndangans()),
         ),
+         BlocProvider<TamuBloc>(
+          create: (context) =>
+            TamuBloc(context.read<ApiService>(),
+            context.read<AuthProvider>(),)..add(GetTamu()),
+        ),
+        
           
       ],
       child: MaterialApp(
