@@ -1,24 +1,28 @@
+
+
 class Order {
   final int? id;
-  final int profile_id;
-  final int item_id;
-  final String tanggal_terakhir;
-  final String kode;
-  final String jumlah;
-  final String status;
+  final int? profile_id;
+  final int? item_id;
+  final String? tanggal_terakhir;
+  final String? kode;
+  final String? jumlah;
+  final String? status;
   final String? nama_item;
   final String? name;
+  final String? username;
 
   Order({
     this.id,
-    required this.profile_id,
-    required this.item_id,
-    required this.tanggal_terakhir,
-    required this.kode,
-    required this.jumlah,
-    required this.status,
+    this.profile_id,
+    this.item_id,
+    this.tanggal_terakhir,
+    this.kode,
+    this.jumlah,
+    this.status,
     this.nama_item,
     this.name,
+    this.username,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -32,9 +36,11 @@ class Order {
       status: json['status'],
       nama_item: json['nama_item'],
       name: json['name'],
+      username: json['username'],
     );
   }
 
+ 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -46,6 +52,7 @@ class Order {
       'status': status,
       'nama_item': nama_item,
       'name': name,
+      'username': username,
     };
   }
 

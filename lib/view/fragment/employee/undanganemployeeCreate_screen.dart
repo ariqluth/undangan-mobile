@@ -86,11 +86,11 @@ class _CreateUndanganFormState extends State<CreateUndanganForm> {
                   } else if (state is OrderLoaded) {
                     return DropdownButtonFormField<int>(
                       value: _selectedOrderId,
-                      decoration: InputDecoration(labelText: 'Order ID'),
+                      decoration: InputDecoration(labelText: 'Jumlah Undangan'),
                       items: state.Orders.map((order) {
                         return DropdownMenuItem<int>(
                           value: order.id,
-                          child: Text(order.jumlah),
+                          child: Text(order.jumlah!),
                         );
                       }).toList(),
                       onChanged: (value) {

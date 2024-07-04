@@ -16,7 +16,7 @@ import '../models/order.dart';
 
 class ApiService {
   // final String baseUrl = "https://weddingcheck.polinema.web.id/api";
-  final String baseUrl = "https://6751-2001-448a-5040-4bfb-6812-d32-3b10-4316.ngrok-free.app/api";
+  final String baseUrl = "https://eca0-125-166-8-24.ngrok-free.app/api";
 
 // management-user
   Future<List<Managementuser>> getUsers(String token) async {
@@ -762,23 +762,30 @@ Future<List<OrderList>> showPetugasOrderList(int id_petugas, String token) async
 }
 
 
- Future<List<Order>> showdropdown(int orderlistId, String token) async {
-  final response = await http.get(
-    Uri.parse('$baseUrl/orderlist/dropdown/$orderlistId'),
-    headers: {
-      'Content-Type': 'application/json; charset=UTF-8',
-      'Authorization': 'Bearer $token',
-    },
-  );
+    Future<List<Order>> showdropdown(int orderListId, String token) async {
+    final url = Uri.parse('$baseUrl/order-list/dropdown/$orderListId');
+    print('Requesting URL: $url');
+    print('Using token: $token');
 
-  if (response.statusCode == 200) {
-    var jsonResponse = json.decode(response.body) as List;
-    return jsonResponse.map((json) => Order.fromJson(json)).toList();
-  } else {
-    print('Failed to load order dropdown: ${response.statusCode} ${response.body}');
-    throw Exception('Failed to load order dropdown');
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      var jsonResponse = json.decode(response.body) as List;
+      return jsonResponse.map((json) => Order.fromJson(json)).toList();
+    } else {
+      print('Failed to load order dropdown: ${response.statusCode} ${response.body}');
+      throw Exception('Failed to load order dropdown');
+    }
   }
-}
 
   Future<OrderList> UpdateOrderList(int id, OrderList orderlist, String token) async {
     final response = await http.put(

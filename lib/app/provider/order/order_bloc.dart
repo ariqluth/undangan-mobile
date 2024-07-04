@@ -81,15 +81,26 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   }
 
 void _showDropdown(ShowDropdown event, Emitter<OrderState> emit) async {
-    emit(OrderLoading());
-    try {
-      final Order = await apiService.showdropdown(event.orderListId, authProvider.token!);
-      emit(OrderLoaded(Order));
-    } catch (e) {
-      print('Error loading orders dropdown: $e');
-      emit(OrderError(e.toString()));
+  emit(OrderLoading());
+
+  try {
+    final orders = await apiService.showdropdown(event.orderListId, authProvider.token!);
+
+    // Print the token for debugging
+    print("Token: ${authProvider.token}");
+
+    // Print each order for debugging
+    for (var order in orders) {
+      print("Order ID: ${order.id}, Jumlah: ${order.jumlah}");
     }
+
+    emit(OrderLoaded(orders));
+  } catch (e) {
+    print('Error loading orders dropdown cok: $e');
+    emit(OrderError(e.toString()));
   }
+}
+
 
  void _onDeleteOrder(DeleteOrder event, Emitter<OrderState> emit) async {
     emit(OrderLoading());
