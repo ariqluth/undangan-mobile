@@ -1,17 +1,19 @@
-// screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:myapp/app/provider/bottom_nav_bloc.dart';
+import 'package:myapp/app/provider/profile/profile_bloc.dart';
 import 'package:myapp/view/fragment/employee/orderemployee_screen.dart';
 import 'package:myapp/view/fragment/employee/orderlist_screen.dart';
 import 'package:myapp/view/fragment/employee/orderverifyemployee_screen.dart';
 import 'package:myapp/view/fragment/profile_screen.dart';
+import 'package:myapp/view/profile/profile_screen.dart';
 import '../app/provider/auth_bloc.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
-_DashboardScreenState createState() => _DashboardScreenState();
+  _DashboardScreenState createState() => _DashboardScreenState();
 }
+
 class _DashboardScreenState extends State<DashboardScreen> {
   bool _isLoggingOut = false;
 
@@ -23,14 +25,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
-  void _checkVerification(BuildContext context) {
+  Future<void> _checkVerification(BuildContext context) async {
     final user = context.read<AuthBloc>().authProvider.user;
-    if (user != null && user.verify.isEmpty) {
-      _showVerificationDialog(context);
+    if (user != null) {
+      // Check if email is verified
+      if (user.verify == null || user.verify.isEmpty) {
+        _showEmailVerificationDialog(context);
+        return;
+      }
+
+      // Check if profile is complete
+      if (user.verify.isEmpty) {
+        final profile = await context.read<ProfileBloc>().apiService.showProfile(user.id, user.token);
+        final isProfileComplete = profile.username.isNotEmpty && profile.alamat.isNotEmpty && profile.nomer_telepon.isNotEmpty;
+        if (!isProfileComplete) {
+          _showVerificationStepper(context, user.id);
+        }
+      }
     }
   }
 
- void _showVerificationDialog(BuildContext context) {
+  void _showVerificationStepper(BuildContext context, int userId) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: ProfileVerificationStepper(userId: userId),
+        );
+      },
+    );
+  }
+
+  void _showEmailVerificationDialog(BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -114,7 +141,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               case 0:
                 return Center(child: Text('Home Screen'));
               case 1:
-                 final user = context.read<AuthBloc>().authProvider.user;
+                final user = context.read<AuthBloc>().authProvider.user;
                 return ShowProfileScreen(userId: user!.id);
               case 2:
                 return ShowVerifyProfileScreen();
@@ -165,7 +192,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 icon: Icon(Icons.settings),
                 label: 'VerifyOrder',
               ),
-               BottomNavigationBarItem(
+              BottomNavigationBarItem(
                 icon: Icon(Icons.settings),
                 label: 'ListOrder',
               ),

@@ -69,7 +69,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> logout() async {
     // final url = Uri.parse('https://weddingcheck.polinema.web.id/api/auth/logout');
-    final url = Uri.parse('https://eca0-125-166-8-24.ngrok-free.appp/api/auth/logout');
+    final url = Uri.parse('https://eca0-125-166-8-24.ngrok-free.app/api/auth/logout');
     final response = await http.post(
       url,
       headers: {
